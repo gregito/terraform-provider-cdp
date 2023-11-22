@@ -2,7 +2,7 @@ name: Periodic Release Job
 
 on:
   schedule:
-    - cron: '*/5 * * * *'
+    - cron: '*/2 * * * *'
 
 jobs:
   check-release-branches:
