@@ -22,9 +22,10 @@ jobs:
         run: |
           for branch in ${{ steps.get-branches.outputs.branches }}; do
             branch_name=$(echo "$branch" | sed 's/origin\///' | tr -d '[:space:]')
-            if [[ "$branch_name" == release-v* ]]; then
-              if git log --since="24 hours ago" --pretty=oneline "origin/$branch_name" | grep .; then
-                echo "Running job for $branch_name"
-              fi
-            fi
+            echo "Running job for $branch_name"
+            # if [[ "$branch_name" == release-v* ]]; then
+            #   if git log --since="24 hours ago" --pretty=oneline "origin/$branch_name" | grep .; then
+            #     echo "Running job for $branch_name"
+            #   fi
+            # fi
           done
