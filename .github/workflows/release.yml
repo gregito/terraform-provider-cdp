@@ -25,5 +25,5 @@ jobs:
             echo "Tags are different, performing action..."
             # Perform your action here, like executing 'make release'
           else
-            echo "Tags are identical, no action needed."
+            echo "Tags [$LATEST_RELEASE_TAG :: $LATEST_COMMIT_TAG] are identical, no action needed."
           fi
