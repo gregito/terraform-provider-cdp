@@ -11,17 +11,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Fetch latest release
+        id: fetch_latest_release
         run: |
           LATEST_RELEASE_TAG=$(curl -s https://api.github.com/repos/gregito/terraform-provider-cdp/releases | jq '.[].tag_name' | head -n 1 | sed 's/"//g')
           echo "Latest release tag: $LATEST_RELEASE_TAG"
+          echo "::set-output name=latest_release_tag::$LATEST_RELEASE_TAG"
+          echo "{latest_release_tag}={$LATEST_RELEASE_TAG}" >> $GITHUB_OUTPUT
       - name: Check out code
         uses: actions/checkout@v4
       - name: Fetch latest commit
+        id: fetch_latest_commit
         run: |
           git fetch --tags
           LATEST_COMMIT_TAG=$(git describe --tags --abbrev=0)
           echo "Latest commit tag: $LATEST_COMMIT_TAG"
+          echo "::set-output name=latest_commit_tag::$LATEST_COMMIT_TAG"
+          echo "{latest_commit_tag}={$LATEST_COMMIT_TAG}" >> $GITHUB_OUTPUT
       - name: Compare tags
+        if: steps.fetch_latest_release.outputs.latest_release_tag == steps.fetch_latest_commit.outputs.latest_commit_tag
         run: |
           if [ "$LATEST_RELEASE_TAG" != "$LATEST_COMMIT_TAG" ]; then
             echo "Tags are different, performing action..."
