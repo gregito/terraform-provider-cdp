@@ -2,30 +2,26 @@ name: Periodic Release Job
 
 on:
   schedule:
-    - cron: '*/15 * * * *'
+    - cron: '*/5 * * * *'
 
 jobs:
-  check-release-branches:
+  check-release:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Get branch list
-        id: get-branches
+      - name: Fetch latest release
         run: |
-          branches=$(git branch -r --list "origin/release-v*")
-          echo "::set-output name=branches::$branches"
-
-      - name: Iterate through branches and trigger jobs
+          TAG=$(curl -s https://api.github.com/repos/:owner/:repo/releases/latest | jq -r '.tag_name')
+          echo "Latest release tag: $TAG"
+      - name: Fetch latest commit
         run: |
-          for branch in ${{ steps.get-branches.outputs.branches }}; do
-            branch_name=$(echo "$branch" | sed 's/origin\///' | tr -d '[:space:]')
-            echo "Running job for $branch_name"
-            # if [[ "$branch_name" == release-v* ]]; then
-            #   if git log --since="24 hours ago" --pretty=oneline "origin/$branch_name" | grep .; then
-            #     echo "Running job for $branch_name"
-            #   fi
-            # fi
-          done
+          git fetch --tags
+          LATEST_COMMIT_TAG=$(git describe --tags --abbrev=0)
+          echo "Latest commit tag: $LATEST_COMMIT_TAG"
+      - name: Compare tags
+        run: |
+          if [ "$TAG" != "$LATEST_COMMIT_TAG" ]; then
+            echo "Tags are different, performing action..."
+            # Perform your action here, like executing 'make release'
+          else
+            echo "Tags are identical, no action needed."
+          fi
