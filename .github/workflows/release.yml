@@ -19,6 +19,8 @@ jobs:
       - name: Check out code
         id: checkout_code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Fetch latest commit
         id: fetch_latest_commit
         run: |
