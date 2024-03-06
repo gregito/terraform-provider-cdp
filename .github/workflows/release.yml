@@ -31,8 +31,8 @@ jobs:
       - name: Compare tags
         #if: steps.fetch_latest_release.outputs.latest_release_tag != steps.fetch_latest_commit.outputs.latest_commit_tag
         run: |
-          LATEST_COMMIT_TAG ="${{ steps.fetch_latest_commit.outputs.latest_commit_tag }}"
-          LATEST_RELEASE_TAG ="${{ steps.fetch_latest_release.outputs.latest_release_tag }}"
+          LATEST_COMMIT_TAG="${{ steps.fetch_latest_commit.outputs.latest_commit_tag }}"
+          LATEST_RELEASE_TAG="${{ steps.fetch_latest_release.outputs.latest_release_tag }}"
           if [ "$LATEST_RELEASE_TAG" != "$LATEST_COMMIT_TAG" ]; then
             echo "Tags are different, performing action..."
             # Perform your action here, like executing 'make release'
