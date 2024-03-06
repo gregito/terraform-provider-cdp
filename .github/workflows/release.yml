@@ -10,8 +10,10 @@ jobs:
     steps:
       - name: Fetch latest release
         run: |
-          TAG=$(curl -s https://api.github.com/repos/:owner/:repo/releases/latest | jq -r '.tag_name')
-          echo "Latest release tag: $TAG"
+          LATEST_RELEASE_TAG=$(curl -s https://api.github.com/repos/gregito/terraform-provider-cdp/releases | jq '.[].tag_name' | head -n 1 | sed 's/"//g')
+          echo "Latest release tag: $LATEST_RELEASE_TAG"
+      - name: Check out code
+        uses: actions/checkout@v4
       - name: Fetch latest commit
         run: |
           git fetch --tags
@@ -19,7 +21,7 @@ jobs:
           echo "Latest commit tag: $LATEST_COMMIT_TAG"
       - name: Compare tags
         run: |
-          if [ "$TAG" != "$LATEST_COMMIT_TAG" ]; then
+          if [ "$LATEST_RELEASE_TAG" != "$LATEST_COMMIT_TAG" ]; then
             echo "Tags are different, performing action..."
             # Perform your action here, like executing 'make release'
           else
