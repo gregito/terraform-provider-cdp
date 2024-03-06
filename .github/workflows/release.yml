@@ -3,6 +3,8 @@ name: Periodic Release Job
 on:
   schedule:
     - cron: '*/15 * * * *'
+  push:
+    branches: [ "main" ]
 
 jobs:
   check-release:
