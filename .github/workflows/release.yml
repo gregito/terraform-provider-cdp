@@ -3,8 +3,6 @@ name: Periodic Release Job
 on:
   schedule:
     - cron: '*/15 * * * *'
-  push:
-    branches: [ "main" ]
 
 jobs:
   check-release:
@@ -28,14 +26,24 @@ jobs:
           LATEST_COMMIT_TAG=$(git describe --tags --abbrev=0)
           echo "Latest commit tag: $LATEST_COMMIT_TAG"
           echo "latest_commit_tag=$LATEST_COMMIT_TAG" >> $GITHUB_OUTPUT
-      - name: Compare tags
+      - name: Setup Go
+        uses: actions/setup-go@fac708d6674e30b6ba41289acaab6d4b75aa0753 # v4.0.1
+        with:
+          go-version-file: 'go.mod'
+          cache: true
+      - name: Import GPG key
+        uses: crazy-max/ghaction-import-gpg@72b6676b71ab476b77e676928516f6982eef7a41 # v5.3.0
+        id: import_gpg
+        with:
+          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+          passphrase: ${{ secrets.PASSPHRASE }}
+      - name: Run GoReleaser
         if: steps.fetch_latest_release.outputs.latest_release_tag != steps.fetch_latest_commit.outputs.latest_commit_tag
-        run: |
-          LATEST_COMMIT_TAG="${{ steps.fetch_latest_commit.outputs.latest_commit_tag }}"
-          LATEST_RELEASE_TAG="${{ steps.fetch_latest_release.outputs.latest_release_tag }}"
-          if [ "$LATEST_RELEASE_TAG" != "$LATEST_COMMIT_TAG" ]; then
-            echo "Tags [$LATEST_RELEASE_TAG :: $LATEST_COMMIT_TAG] are different, performing action..."
-            # Perform your action here, like executing 'make release'
-          else
-            echo "Tags [$LATEST_RELEASE_TAG :: $LATEST_COMMIT_TAG] are identical, no action needed."
-          fi
+        uses: goreleaser/goreleaser-action@v5.0.0
+        with:
+          args: release --clean
+          draft: false
+        env:
+          # GitHub sets the GITHUB_TOKEN secret automatically.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GPG_FINGERPRINT: ${{ steps.import_gpg.outputs.fingerprint }}
