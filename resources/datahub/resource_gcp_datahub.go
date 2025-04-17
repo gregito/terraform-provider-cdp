@@ -62,6 +62,8 @@ func (r *gcpDatahubResource) Create(ctx context.Context, req resource.CreateRequ
 	params := operations.NewCreateGCPClusterParamsWithContext(ctx)
 	params.WithInput(fromModelToGcpRequest(data, ctx))
 
+	tflog.Info(ctx, "stuff")
+
 	res, err := r.client.Datahub.Operations.CreateGCPCluster(params)
 	if err != nil {
 		tflog.Error(ctx, err.Error())
