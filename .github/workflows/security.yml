@@ -22,5 +22,8 @@ jobs:
           pwd;ls  -lah
       - name: Run Gosec Security Scanner
         uses: securego/gosec@master
+        working-directory: '/home/runner/work/terraform-provider-cdp/terraform-provider-cdp'
         with:
           args: ./..
+        run: |
+          pwd;ls  -lah
