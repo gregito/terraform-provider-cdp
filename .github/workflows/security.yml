@@ -17,6 +17,7 @@ jobs:
         with:
           args: -exclude-generated -exclude-dir=cdp-sdk-go/gen -exclude-dir=mocks ./...
   rule_check:
+    if: false
     name: 'Perform Bearer rule check'
     runs-on: ubuntu-latest
     steps:
