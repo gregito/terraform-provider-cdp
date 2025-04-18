@@ -16,3 +16,12 @@ jobs:
         uses: securego/gosec@master
         with:
           args: -exclude-generated -exclude-dir=cdp-sdk-go/gen -exclude-dir=mocks ./...
+  rule_check:
+    name: 'Perform Bearer rule check'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Bearer
+        uses: bearer/bearer-action@v2
+        with:
+          skip-path: 'cdp-sdk-go/gen'
